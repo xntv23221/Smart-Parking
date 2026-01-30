@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.MessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.Message">
+        <id column="message_id" property="messageId"/>
+        <result column="sender_id" property="senderId"/>
+        <result column="sender_role" property="senderRole"/>
+        <result column="receiver_id" property="receiverId"/>
+        <result column="receiver_role" property="receiverRole"/>
+        <result column="content" property="content"/>
+        <result column="type" property="type"/>
+        <result column="is_read" property="isRead"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        message_id, sender_id, sender_role, receiver_id, receiver_role, content, type, is_read, created_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from messages
+        where message_id = #{id}
+    </select>
+    
+    <select id="selectByReceiver" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from messages
+        where receiver_id = #{receiverId} and receiver_role = #{receiverRole}
+        order by created_at desc
+    </select>
+
+    <select id="selectRelatedMessages" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from messages
+        where (receiver_id = #{userId} and receiver_role = #{userRole})
+           or (sender_id = #{userId} and sender_role = #{userRole})
+        order by created_at desc
+    </select>
+
+    <select id="selectConversation" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from messages
+        where (sender_id = #{userId} and sender_role = #{userRole} and receiver_id = #{otherId} and receiver_role = #{otherRole})
+           or (sender_id = #{otherId} and sender_role = #{otherRole} and receiver_id = #{userId} and receiver_role = #{userRole})
+        order by created_at asc
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="messageId">
+        insert into messages (sender_id, sender_role, receiver_id, receiver_role, content, type, is_read, created_at)
+        values (#{senderId}, #{senderRole}, #{receiverId}, #{receiverRole}, #{content}, #{type}, #{isRead}, #{createdAt})
+    </insert>
+
+    <update id="updateReadStatus">
+        update messages
+        set is_read = true
+        where message_id = #{messageId}
+    </update>
+    
+    <update id="markAllRead">
+        update messages
+        set is_read = true
+        where receiver_id = #{receiverId} and receiver_role = #{receiverRole}
+    </update>
+
+    <update id="markConversationRead">
+        update messages
+        set is_read = true
+        where receiver_id = #{receiverId} and receiver_role = #{receiverRole}
+          and sender_id = #{senderId} and sender_role = #{senderRole}
+    </update>
+    
+    <delete id="deleteById">
+        delete from messages where message_id = #{id}
+    </delete>
+
+</mapper>

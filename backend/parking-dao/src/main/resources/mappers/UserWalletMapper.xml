@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.UserWalletMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.UserWallet">
+        <id column="wallet_id" property="walletId"/>
+        <result column="user_id" property="userId"/>
+        <result column="balance" property="balance"/>
+        <result column="version" property="version"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        wallet_id, user_id, balance, version, updated_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from user_wallet
+        where wallet_id = #{id}
+    </select>
+    
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from user_wallet
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="walletId">
+        insert into user_wallet (user_id, balance, version, updated_at)
+        values (#{userId}, #{balance}, #{version}, #{updatedAt})
+    </insert>
+
+    <update id="update">
+        update user_wallet
+        <set>
+            <if test="balance != null">balance = #{balance},</if>
+            <if test="version != null">version = #{version},</if>
+            updated_at = CURRENT_TIMESTAMP
+        </set>
+        where wallet_id = #{walletId}
+    </update>
+    
+    <update id="updateBalance">
+        update user_wallet
+        set balance = balance + #{amount}, version = version + 1, updated_at = CURRENT_TIMESTAMP
+        where wallet_id = #{walletId} and version = #{version}
+    </update>
+    
+    <delete id="deleteById">
+        delete from user_wallet where wallet_id = #{id}
+    </delete>
+
+</mapper>

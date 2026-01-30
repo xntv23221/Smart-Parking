@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.PricingRuleMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.PricingRule">
+        <id column="rule_id" property="ruleId"/>
+        <result column="lot_id" property="lotId"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="base_duration" property="baseDuration"/>
+        <result column="base_price" property="basePrice"/>
+        <result column="extra_price_per_hour" property="extraPricePerHour"/>
+        <result column="daily_cap" property="dailyCap"/>
+        <result column="effective_date" property="effectiveDate"/>
+        <result column="is_active" property="isActive"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        rule_id, lot_id, vehicle_type, base_duration, base_price, extra_price_per_hour, daily_cap, effective_date, is_active
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from pricing_rules
+        where rule_id = #{id}
+    </select>
+    
+    <select id="selectByLotId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from pricing_rules
+        where lot_id = #{lotId}
+    </select>
+    
+    <select id="selectActiveRule" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from pricing_rules
+        where lot_id = #{lotId} 
+          and (vehicle_type is null or vehicle_type = #{vehicleType})
+          and is_active = true
+          and (effective_date is null or effective_date &lt;= current_date)
+        order by vehicle_type desc, effective_date desc
+        limit 1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="ruleId">
+        insert into pricing_rules (lot_id, vehicle_type, base_duration, base_price, extra_price_per_hour, daily_cap, effective_date, is_active)
+        values (#{lotId}, #{vehicleType}, #{baseDuration}, #{basePrice}, #{extraPricePerHour}, #{dailyCap}, #{effectiveDate}, #{isActive})
+    </insert>
+
+    <update id="update">
+        update pricing_rules
+        <set>
+            <if test="vehicleType != null">vehicle_type = #{vehicleType},</if>
+            <if test="baseDuration != null">base_duration = #{baseDuration},</if>
+            <if test="basePrice != null">base_price = #{basePrice},</if>
+            <if test="extraPricePerHour != null">extra_price_per_hour = #{extraPricePerHour},</if>
+            <if test="dailyCap != null">daily_cap = #{dailyCap},</if>
+            <if test="effectiveDate != null">effective_date = #{effectiveDate},</if>
+            <if test="isActive != null">is_active = #{isActive},</if>
+        </set>
+        where rule_id = #{ruleId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from pricing_rules where rule_id = #{id}
+    </delete>
+
+</mapper>

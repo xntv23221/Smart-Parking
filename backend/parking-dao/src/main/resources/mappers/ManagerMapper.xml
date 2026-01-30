@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.ManagerMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.Manager">
+        <id column="manager_id" property="managerId"/>
+        <result column="username" property="username"/>
+        <result column="password_hash" property="passwordHash"/>
+        <result column="real_name" property="realName"/>
+        <result column="phone" property="phone"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        manager_id, username, password_hash, real_name, phone, status, created_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from managers
+        where manager_id = #{id}
+    </select>
+    
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from managers
+        where username = #{username}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="managerId">
+        insert into managers (username, password_hash, real_name, phone, status, created_at)
+        values (#{username}, #{passwordHash}, #{realName}, #{phone}, #{status}, #{createdAt})
+    </insert>
+
+    <update id="update">
+        update managers
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="passwordHash != null">password_hash = #{passwordHash},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where manager_id = #{managerId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from managers where manager_id = #{id}
+    </delete>
+
+</mapper>

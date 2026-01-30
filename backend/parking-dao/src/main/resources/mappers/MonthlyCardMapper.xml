@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.MonthlyCardMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.MonthlyCard">
+        <id column="card_id" property="cardId"/>
+        <result column="user_id" property="userId"/>
+        <result column="lot_id" property="lotId"/>
+        <result column="start_date" property="startDate"/>
+        <result column="end_date" property="endDate"/>
+        <result column="plate_number" property="plateNumber"/>
+        <result column="status" property="status"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        card_id, user_id, lot_id, start_date, end_date, plate_number, status, created_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from monthly_cards
+        where card_id = #{id}
+    </select>
+    
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from monthly_cards
+        where user_id = #{userId}
+        order by created_at desc
+    </select>
+    
+    <select id="selectActiveByPlate" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from monthly_cards
+        where plate_number = #{plateNumber} and lot_id = #{lotId} and status = 1 and end_date >= CURRENT_DATE
+        limit 1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="cardId">
+        insert into monthly_cards (user_id, lot_id, start_date, end_date, plate_number, status, created_at)
+        values (#{userId}, #{lotId}, #{startDate}, #{endDate}, #{plateNumber}, #{status}, #{createdAt})
+    </insert>
+
+    <update id="update">
+        update monthly_cards
+        <set>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        where card_id = #{cardId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from monthly_cards where card_id = #{id}
+    </delete>
+
+</mapper>

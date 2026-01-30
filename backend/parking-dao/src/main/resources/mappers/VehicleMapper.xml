@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.VehicleMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.Vehicle">
+        <id column="vehicle_id" property="vehicleId"/>
+        <result column="user_id" property="userId"/>
+        <result column="plate_number" property="plateNumber"/>
+        <result column="brand" property="brand"/>
+        <result column="model" property="model"/>
+        <result column="color" property="color"/>
+        <result column="vehicle_type" property="vehicleType"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        vehicle_id, user_id, plate_number, brand, model, color, vehicle_type, is_default, created_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from vehicles
+        where vehicle_id = #{id}
+    </select>
+    
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from vehicles
+        where user_id = #{userId}
+    </select>
+    
+    <select id="selectByPlateNumber" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from vehicles
+        where plate_number = #{plateNumber}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="vehicleId">
+        insert into vehicles (user_id, plate_number, brand, model, color, vehicle_type, is_default, created_at)
+        values (#{userId}, #{plateNumber}, #{brand}, #{model}, #{color}, #{vehicleType}, #{isDefault}, #{createdAt})
+    </insert>
+
+    <update id="update">
+        update vehicles
+        <set>
+            <if test="plateNumber != null">plate_number = #{plateNumber},</if>
+            <if test="brand != null">brand = #{brand},</if>
+            <if test="model != null">model = #{model},</if>
+            <if test="color != null">color = #{color},</if>
+            <if test="vehicleType != null">vehicle_type = #{vehicleType},</if>
+            <if test="isDefault != null">is_default = #{isDefault},</if>
+        </set>
+        where vehicle_id = #{vehicleId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from vehicles where vehicle_id = #{id}
+    </delete>
+
+</mapper>

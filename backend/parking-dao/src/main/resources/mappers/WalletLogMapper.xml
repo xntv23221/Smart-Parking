@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.WalletLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.WalletLog">
+        <id column="log_id" property="logId"/>
+        <result column="wallet_id" property="walletId"/>
+        <result column="amount" property="amount"/>
+        <result column="type" property="type"/>
+        <result column="balance_after" property="balanceAfter"/>
+        <result column="order_id" property="orderId"/>
+        <result column="remark" property="remark"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        log_id, wallet_id, amount, type, balance_after, order_id, remark, created_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from wallet_log
+        where log_id = #{id}
+    </select>
+    
+    <select id="selectByWalletId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from wallet_log
+        where wallet_id = #{walletId}
+        order by created_at desc
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="logId">
+        insert into wallet_log (wallet_id, amount, type, balance_after, order_id, remark, created_at)
+        values (#{walletId}, #{amount}, #{type}, #{balanceAfter}, #{orderId}, #{remark}, #{createdAt})
+    </insert>
+
+    <delete id="deleteById">
+        delete from wallet_log where log_id = #{id}
+    </delete>
+
+</mapper>

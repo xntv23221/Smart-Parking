@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.SystemAdminMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.SystemAdmin">
+        <id column="admin_id" property="adminId"/>
+        <result column="username" property="username"/>
+        <result column="password_hash" property="passwordHash"/>
+        <result column="real_name" property="realName"/>
+        <result column="phone" property="phone"/>
+        <result column="role" property="role"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="last_login" property="lastLogin"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        admin_id, username, password_hash, real_name, phone, role, created_at, last_login
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from system_admins
+        where admin_id = #{id}
+    </select>
+    
+    <select id="selectByUsername" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from system_admins
+        where username = #{username}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="adminId">
+        insert into system_admins (username, password_hash, real_name, phone, role, created_at, last_login)
+        values (#{username}, #{passwordHash}, #{realName}, #{phone}, #{role}, #{createdAt}, #{lastLogin})
+    </insert>
+
+    <update id="update">
+        update system_admins
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="passwordHash != null">password_hash = #{passwordHash},</if>
+            <if test="realName != null">real_name = #{realName},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="role != null">role = #{role},</if>
+            <if test="lastLogin != null">last_login = #{lastLogin},</if>
+        </set>
+        where admin_id = #{adminId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from system_admins where admin_id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.ParkingLotMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.ParkingLot">
+        <id column="lot_id" property="lotId"/>
+        <result column="name" property="name"/>
+        <result column="address" property="address"/>
+        <result column="total_spots" property="totalSpots"/>
+        <result column="available_spots" property="availableSpots"/>
+        <result column="manager_id" property="managerId"/>
+        <result column="latitude" property="latitude"/>
+        <result column="longitude" property="longitude"/>
+        <result column="status" property="status"/>
+        <result column="type" property="type"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        lot_id, name, address, total_spots, available_spots, manager_id, latitude, longitude, status, type, created_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_lots
+        where lot_id = #{id}
+    </select>
+    
+    <select id="selectAll" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_lots
+    </select>
+    
+    <select id="selectByManagerId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_lots
+        where manager_id = #{managerId}
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_lots
+        where name = #{name}
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="lotId">
+        insert into parking_lots (name, address, total_spots, available_spots, manager_id, latitude, longitude, status, type, created_at)
+        values (#{name}, #{address}, #{totalSpots}, #{availableSpots}, #{managerId}, #{latitude}, #{longitude}, #{status}, #{type}, #{createdAt})
+    </insert>
+
+    <update id="update">
+        update parking_lots
+        <set>
+            <if test="name != null">name = #{name},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="totalSpots != null">total_spots = #{totalSpots},</if>
+            <if test="availableSpots != null">available_spots = #{availableSpots},</if>
+            <if test="managerId != null">manager_id = #{managerId},</if>
+            <if test="latitude != null">latitude = #{latitude},</if>
+            <if test="longitude != null">longitude = #{longitude},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="type != null">type = #{type},</if>
+        </set>
+        where lot_id = #{lotId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from parking_lots where lot_id = #{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.ParkingSpotMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.ParkingSpot">
+        <id column="spot_id" property="spotId"/>
+        <result column="lot_id" property="lotId"/>
+        <result column="spot_number" property="spotNumber"/>
+        <result column="spot_type" property="spotType"/>
+        <result column="is_occupied" property="isOccupied"/>
+        <result column="last_updated" property="lastUpdated"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        spot_id, lot_id, spot_number, spot_type, is_occupied, last_updated
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_spots
+        where spot_id = #{id}
+    </select>
+    
+    <select id="selectByLotId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_spots
+        where lot_id = #{lotId}
+    </select>
+    
+    <select id="selectByLotIdAndSpotNumber" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_spots
+        where lot_id = #{lotId} and spot_number = #{spotNumber}
+    </select>
+    
+    <select id="selectFirstAvailable" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_spots
+        where lot_id = #{lotId} and is_occupied = false
+        limit 1
+    </select>
+    
+    <select id="countAvailableByLotId" resultType="int">
+        select count(*) from parking_spots
+        where lot_id = #{lotId} and is_occupied = false
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="spotId">
+        insert into parking_spots (lot_id, spot_number, spot_type, is_occupied, last_updated)
+        values (#{lotId}, #{spotNumber}, #{spotType}, #{isOccupied}, #{lastUpdated})
+    </insert>
+
+    <update id="update">
+        update parking_spots
+        <set>
+            <if test="spotNumber != null">spot_number = #{spotNumber},</if>
+            <if test="spotType != null">spot_type = #{spotType},</if>
+            <if test="isOccupied != null">is_occupied = #{isOccupied},</if>
+            <if test="lastUpdated != null">last_updated = #{lastUpdated},</if>
+        </set>
+        where spot_id = #{spotId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from parking_spots where spot_id = #{id}
+    </delete>
+
+</mapper>

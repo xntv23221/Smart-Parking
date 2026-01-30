@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.smartparking.dao.mapper.ParkingRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.smartparking.domain.model.ParkingRecord">
+        <id column="record_id" property="recordId"/>
+        <result column="user_id" property="userId"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="lot_id" property="lotId"/>
+        <result column="spot_id" property="spotId"/>
+        <result column="entry_time" property="entryTime"/>
+        <result column="exit_time" property="exitTime"/>
+        <result column="duration_minutes" property="durationMinutes"/>
+        <result column="amount" property="amount"/>
+        <result column="paid_amount" property="paidAmount"/>
+        <result column="status" property="status"/>
+        <result column="payment_status" property="paymentStatus"/>
+        <result column="payment_method" property="paymentMethod"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        record_id, user_id, vehicle_id, lot_id, spot_id, entry_time, exit_time, duration_minutes, amount, paid_amount, status, payment_status, payment_method, created_at
+    </sql>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_records
+        where record_id = #{id}
+    </select>
+    
+    <select id="selectByUserId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_records
+        where user_id = #{userId}
+        order by created_at desc
+    </select>
+    
+    <select id="selectByLotId" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_records
+        where lot_id = #{lotId}
+        order by created_at desc
+    </select>
+    
+    <select id="selectActiveRecord" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from parking_records
+        where vehicle_id = #{vehicleId} and (status = 0 or status = 1)
+        order by entry_time desc
+        limit 1
+    </select>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="recordId">
+        insert into parking_records (user_id, vehicle_id, lot_id, spot_id, entry_time, exit_time, duration_minutes, amount, paid_amount, status, payment_status, payment_method, created_at)
+        values (#{userId}, #{vehicleId}, #{lotId}, #{spotId}, #{entryTime}, #{exitTime}, #{durationMinutes}, #{amount}, #{paidAmount}, #{status}, #{paymentStatus}, #{paymentMethod}, #{createdAt})
+    </insert>
+
+    <update id="update">
+        update parking_records
+        <set>
+            <if test="exitTime != null">exit_time = #{exitTime},</if>
+            <if test="durationMinutes != null">duration_minutes = #{durationMinutes},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="paidAmount != null">paid_amount = #{paidAmount},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="paymentStatus != null">payment_status = #{paymentStatus},</if>
+            <if test="paymentMethod != null">payment_method = #{paymentMethod},</if>
+        </set>
+        where record_id = #{recordId}
+    </update>
+    
+    <delete id="deleteById">
+        delete from parking_records where record_id = #{id}
+    </delete>
+
+</mapper>
